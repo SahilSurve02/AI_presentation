@@ -8,45 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- 
-      Source Material Analysis & Narrative Plan:
-      1.  **Source:** User request for a 2-hour presentation for developers (non-ML experts).
-      2.  **Core Topics:** AI vs. ML, Evolution, Classical ML Use Cases, Deep Dive on GenAI (how it works, failures, successes, prompting, SDLC use).
-      3.  **Narrative Flow:**
-          * **Hook:** Define the terms. What is AI vs. ML vs. Deep Learning?
-          * **Context:** How did we get here? An evolution timeline.
-          * **The "Classic" Toolbox:** What are the main types of ML developers might encounter (Predictive, NLP, CV) and their real-world use cases?
-          * **The "New Wave":** Introduce GenAI as the next major shift. Compare it to classical AI.
-          * **GenAI Deep Dive:** How does an LLM *actually* work? (Tokenization, next-word prediction).
-          * **Practical Guide:** How to use GenAI in the SDLC. The "Do's and Don'ts" of prompting.
-          * **Reality Check:** Where has it failed, and where does it succeed?
-          * **Conclusion:** Key takeaways for developers.
-    -->
-    
-    <!-- 
-      Selected Color Palette: "Energetic & Playful"
-      HEX: #F94144 (Red), #F3722C (Orange), #F8961E (Amber), #F9C74F (Yellow), #90BE6D (Pistachio), #43AA8B (Green), #577590 (Blue-Gray)
-    -->
-
-    <!-- 
-      Visualization Choices:
-      * **AI vs. ML vs. DL:** (Goal: Organize) -> **HTML/CSS Nested Diagram.** Justification: Classic, clear way to show hierarchy. (NO SVG, NO MERMAID).
-      * **AI Evolution:** (Goal: Change) -> **HTML/CSS Vertical Timeline.** Justification: Responsive, clear flow of events. (NO SVG, NO MERMAID).
-      * **ML Toolbox Adoption:** (Goal: Compare) -> **Chart.js Horizontal Bar Chart.** Justification: Good for comparing categorical data (interest in ML types). (Canvas-based).
-      * **ML Use Cases:** (Goal: Organize) -> **HTML/CSS Flow-Cards.** Justification: Simple flow diagrams (Data -> Model -> Output) for each ML type. (NO SVG, NO MERMAID).
-      * **Classical vs. GenAI:** (Goal: Compare) -> **HTML/CSS Table.** Justification: Direct, clear comparison of attributes. (NO SVG).
-      * **LLM "Next Word" Process:** (Goal: Organize) -> **HTML/CSS Flow Diagram.** Justification: Shows the step-by-step token/predict loop. (NO SVG, NO MERMAID).
-      * **GenAI in SDLC:** (Goal: Show Composition) -> **Chart.js Donut Chart.** Justification: Shows how GenAI assistance is distributed across dev tasks. (Canvas-based).
-      * **Prompting Good vs. Bad:** (Goal: Compare) -> **HTML/CSS 2-Column Layout.** Justification: Clear side-by-side comparison. (NO SVG).
-      * **Successes vs. Failures:** (Goal: Organize) -> **HTML/CSS Lists.** Justification: Simple, scannable lists with icons (Unicode). (NO SVG).
-    -->
-
-    <!-- 
-      Confirmation: NEITHER Mermaid JS NOR SVG were used in this document. 
-      All diagrams are built with HTML/Tailwind CSS. 
-      All charts are rendered to Canvas via Chart.js.
-    -->
-
     <style>
         :root {
             --primary: #F94144;
@@ -72,7 +33,7 @@
             overflow-x: hidden;
         }
 
-        /* Animated Background Pattern */
+        
         body::before {
             content: '';
             position: fixed;
@@ -93,7 +54,7 @@
             50% { transform: translateY(-20px); }
         }
 
-        /* Enhanced Chart Container */
+        
         .chart-container {
             position: relative;
             width: 100%;
@@ -114,7 +75,7 @@
             }
         }
 
-        /* Modern Diagram Box */
+        
         .diagram-box {
             border: 3px solid;
             border-radius: 1rem;
@@ -148,7 +109,7 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
-        /* Enhanced Timeline */
+        
         .timeline-item {
             position: relative;
             padding-bottom: 2.5rem;
@@ -193,7 +154,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
         }
 
-        /* Modern Flow Steps */
+        
         .flow-step {
             display: flex;
             align-items: center;
@@ -219,7 +180,7 @@
             margin: 0.5rem 0;
         }
 
-        /* Section Headers with Badge */
+        
         .section-header {
             position: relative;
             display: inline-block;
@@ -239,7 +200,7 @@
             box-shadow: 0 4px 6px -1px rgba(249, 65, 68, 0.3);
         }
 
-        /* Card Enhancements */
+        
         .enhanced-card {
             background: white;
             border-radius: 1.5rem;
@@ -255,7 +216,7 @@
             border-color: var(--secondary);
         }
 
-        /* Glassmorphism Effect */
+        
         .glass-card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
@@ -264,7 +225,7 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
 
-        /* Gradient Text */
+        
         .gradient-text {
             background: var(--gradient-main);
             -webkit-background-clip: text;
@@ -272,7 +233,7 @@
             background-clip: text;
         }
 
-        /* Pulse Animation */
+        
         @keyframes pulse {
             0%, 100% {
                 opacity: 1;
@@ -286,7 +247,7 @@
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        /* Decorative Divider */
+        
         .decorative-divider {
             height: 4px;
             width: 100px;
@@ -301,9 +262,7 @@
     <main class="max-w-7xl mx-auto p-4 md:p-8">
 
         <header class="text-center my-16 md:my-24">
-            <div class="mb-6">
-                <span class="section-badge pulse">Developer's Guide 2025</span>
-            </div>
+            
             <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                 <span class="gradient-text">From Logic to Language</span>
             </h1>
@@ -311,9 +270,9 @@
             <p class="text-xl md:text-2xl font-light mt-6 max-w-3xl mx-auto" style="color: #577590;">An Engineer's Guide to AI, ML, and Generative AI</p>
         </header>
 
-        <!-- Section 1: AI vs. ML vs. DL -->
+        
         <section class="my-20 relative">
-            <!-- Decorative Background -->
+            
             <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-10" style="background: radial-gradient(circle, #F94144 0%, transparent 70%); filter: blur(40px);"></div>
             
             <div class="text-center mb-12">
@@ -348,7 +307,7 @@
             </div>
         </section>
 
-        <!-- Section 2: Evolution -->
+        
         <section class="my-20 relative">
             <div class="text-center mb-12">
                 <span class="section-badge">Part 2</span>
@@ -393,7 +352,7 @@
             </div>
         </section>
 
-        <!-- Section 3: Classical ML Toolbox -->
+        
         <section class="my-20 relative">
             <div class="text-center mb-12">
                 <span class="section-badge">Part 3</span>
@@ -479,7 +438,7 @@
             </div>
         </section>
 
-        <!-- Real-World Examples Section -->
+        
         <section class="my-20" style="background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%); padding: 4rem 0;">
             <div class="text-center mb-12">
                 <div class="inline-block px-4 py-2 rounded-full mb-4" style="background-color: #FEF3E2; border: 2px solid #F3722C;">
@@ -490,14 +449,14 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-                <!-- Button 1: K12 Theme Classification -->
+                
                 <a href="theme.html" class="block relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <!-- Gradient Overlay -->
+                    
                     <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
-                    <!-- Content -->
+                    
                     <div class="relative p-8 text-white">
-                        <!-- Icon Badge -->
+                        
                         <div class="inline-flex p-4 rounded-2xl mb-6" style="background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -506,11 +465,11 @@
                             </svg>
                         </div>
                         
-                        <!-- Title & Description -->
+                        
                         <h3 class="text-2xl font-bold mb-3">K12 Theme Classification</h3>
                         <p class="text-sm mb-6 leading-relaxed" style="color: rgba(255, 255, 255, 0.9);">NLP-powered API using DistilBERT to categorize educational dialogues into 43 themes with 85% accuracy.</p>
                         
-                        <!-- CTA -->
+                        
                         <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
                             <span class="text-sm font-semibold uppercase tracking-wider">Explore Project</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-2 transition-transform duration-300">
@@ -520,29 +479,29 @@
                         </div>
                     </div>
                     
-                    <!-- Decorative Elements -->
+                    
                     <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, white 0%, transparent 70%);"></div>
                 </a>
 
-                <!-- Button 2: Safety Alert System -->
+                
                 <a href="safety.html" class="block relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <!-- Gradient Overlay -->
+                    
                     <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
-                    <!-- Content -->
+                    
                     <div class="relative p-8 text-white">
-                        <!-- Icon Badge -->
+                        
                         <div class="inline-flex p-4 rounded-2xl mb-6" style="background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
                         </div>
                         
-                        <!-- Title & Description -->
+                        
                         <h3 class="text-2xl font-bold mb-3">Safety Alert System</h3>
                         <p class="text-sm mb-6 leading-relaxed" style="color: rgba(255, 255, 255, 0.9);">Multi-layered AI pipeline detecting dangerous content in school reports using dual-model verification and GPT-4o.</p>
                         
-                        <!-- CTA -->
+                        
                         <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
                             <span class="text-sm font-semibold uppercase tracking-wider">Explore Project</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-2 transition-transform duration-300">
@@ -552,18 +511,18 @@
                         </div>
                     </div>
                     
-                    <!-- Decorative Elements -->
+                    
                     <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, white 0%, transparent 70%);"></div>
                 </a>
 
-                <!-- Button 3: Color Extractor -->
+                
                 <a href="color.html" class="block relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <!-- Gradient Overlay -->
+                    
                     <div class="absolute inset-0 bg-gradient-to-br from-sky-500 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
-                    <!-- Content -->
+                    
                     <div class="relative p-8 text-white">
-                        <!-- Icon Badge -->
+                        
                         <div class="inline-flex p-4 rounded-2xl mb-6" style="background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -571,11 +530,11 @@
                             </svg>
                         </div>
                         
-                        <!-- Title & Description -->
+                        
                         <h3 class="text-2xl font-bold mb-3">Website Color Extractor</h3>
                         <p class="text-sm mb-6 leading-relaxed" style="color: rgba(255, 255, 255, 0.9);">Computer Vision API combining OpenCV and K-Means clustering to extract brand colors from any website URL.</p>
                         
-                        <!-- CTA -->
+                        
                         <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
                             <span class="text-sm font-semibold uppercase tracking-wider">Explore Project</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-2 transition-transform duration-300">
@@ -585,13 +544,13 @@
                         </div>
                     </div>
                     
-                    <!-- Decorative Elements -->
+                    
                     <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, white 0%, transparent 70%);"></div>
                 </a>
             </div>
         </section>
 
-        <!-- Section 4: Generative AI -->
+        
         <section class="my-20 relative">
             <div class="text-center mb-12">
                 <span class="section-badge">Part 4</span>
@@ -635,7 +594,7 @@
             </div>
         </section>
 
-        <!-- Section 5: How LLMs Work -->
+        
         <section class="my-20 relative">
             <div class="text-center mb-12">
                 <span class="section-badge">Part 5</span>
@@ -679,7 +638,7 @@
             </div>
         </section>
 
-        <!-- Section 6: Developer's Guide to GenAI -->
+        
         <section class="my-20 relative">
             <div class="text-center mb-12">
                 <span class="section-badge">Part 6</span>
@@ -741,7 +700,7 @@
             <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">This tool is powerful, but not magic. Knowing *when not* to trust it is as important as knowing how to use it.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-                <!-- UPDATED CONTENT FOR FAILS -->
+                
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h4 class="text-xl font-semibold mb-4 text-red-600">Where GenAI Fails (Be Careful!)</h4>
                     <ul class="space-y-3" style="color: #577590;">
@@ -772,7 +731,7 @@
                     </ul>
                 </div>
                 
-                <!-- UPDATED CONTENT FOR SUCCEEDS -->
+                
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h4 class="text-xl font-semibold mb-4 text-green-700">Where GenAI Succeeds (Use It!)</h4>
                     <ul class="space-y-3" style="color: #577590;">
@@ -805,7 +764,7 @@
             </div>
         </section>
 
-        <!-- Section 7: Agents -->
+        
         <section class="my-16">
             <h2 class="text-3xl font-bold text-center mb-4" style="color: #F3722C;">Part 7: From Chatbot to Coworker - What is an Agent?</h2>
             <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">We've covered LLMs (the brain). Now let's give that brain some hands. An "Agent" is an LLM wrapper that can <em>act</em> on the world.</p>
@@ -864,7 +823,7 @@
             </div>
         </section>
 
-        <!-- Section 8: MCP -->
+        
         <section class="my-16">
             <h2 class="text-3xl font-bold text-center mb-4" style="color: #F3722C;">Part 8: Giving AI New Skills with MCP</h2>
             <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">Model Context Protocol (MCP) is like an "App Store" for your AI. Instead of waiting for the AI company to build a feature, you can just "plug in" a new skill. Let's look at a real example using <strong>multiple MCP servers together</strong> in <strong>Cursor</strong>.</p>
@@ -910,36 +869,36 @@
                     </div>
                 </div>
                 
-                <!-- Two MCP Servers Architecture -->
+                
                 <div class="mt-12">
                     <h3 class="text-2xl font-semibold text-center mb-8" style="color: #577590;">How It Works Under the Hood - Multi-Server Architecture</h3>
                     
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <!-- YouTube Transcriber MCP Flow -->
+                        
                         <div class="enhanced-card">
                             <h4 class="text-lg font-bold text-center mb-4 pb-3 border-b-2" style="color: #F94144; border-color: #F94144;">MCP Server #1: YouTube Transcriber</h4>
                             <div class="flex flex-col items-center justify-center space-y-3 p-4">
                                 
-                                <!-- Client -->
+                                
                                 <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #F94144;">
                                     Cursor (The Client)
                                     <div class="text-xs font-normal opacity-90 mt-1">"I need to transcribe this video URL"</div>
                                 </div>
                                 
-                                <!-- Protocol -->
+                                
                                 <div class="text-xl font-bold text-gray-400">↕️ MCP Protocol</div>
                                 
-                                <!-- Server -->
+                                
                                 <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #F3722C;">
                                     Video Transcriber MCP
                                     <div class="text-xs font-normal opacity-90 mt-1">"Tool: fetch_transcript(video_url)"</div>
                                     <div class="absolute -right-2 -top-2 bg-yellow-400 text-xs text-black font-bold px-2 py-1 rounded-full transform rotate-12">Skill #1</div>
                                 </div>
                                 
-                                <!-- External API -->
+                                
                                 <div class="text-xl font-bold text-gray-400">↕️ YouTube API</div>
                                 
-                                <!-- The Source -->
+                                
                                 <div class="w-full text-center p-2 rounded text-sm font-bold text-white" style="background-color: #dc2626;">
                                     YouTube Video
                                     <div class="text-xs font-normal opacity-90 mt-1">Returns: Full transcript with timestamps</div>
@@ -948,31 +907,31 @@
                             <p class="text-center text-xs text-gray-500 mt-3 italic px-2">Cursor can now "watch" and understand video content without human intervention.</p>
                         </div>
 
-                        <!-- PDF Reader MCP Flow -->
+                        
                         <div class="enhanced-card">
                             <h4 class="text-lg font-bold text-center mb-4 pb-3 border-b-2" style="color: #3b82f6; border-color: #3b82f6;">MCP Server #2: PDF Reader</h4>
                             <div class="flex flex-col items-center justify-center space-y-3 p-4">
                                 
-                                <!-- Client -->
+                                
                                 <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #F94144;">
                                     Cursor (The Client)
                                     <div class="text-xs font-normal opacity-90 mt-1">"I need to read this PDF document"</div>
                                 </div>
                                 
-                                <!-- Protocol -->
+                                
                                 <div class="text-xl font-bold text-gray-400">↕️ MCP Protocol</div>
                                 
-                                <!-- Server -->
+                                
                                 <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #3b82f6;">
                                     PDF Reader MCP
                                     <div class="text-xs font-normal opacity-90 mt-1">"Tool: extract_text(pdf_path)"</div>
                                     <div class="absolute -right-2 -top-2 bg-yellow-400 text-xs text-black font-bold px-2 py-1 rounded-full transform rotate-12">Skill #2</div>
                                 </div>
                                 
-                                <!-- External API -->
+                                
                                 <div class="text-xl font-bold text-gray-400">↕️ File System</div>
                                 
-                                <!-- The Source -->
+                                
                                 <div class="w-full text-center p-2 rounded text-sm font-bold text-white" style="background-color: #7c3aed;">
                                     PDF Document
                                     <div class="text-xs font-normal opacity-90 mt-1">Returns: Extracted text & structure</div>
@@ -982,7 +941,7 @@
                         </div>
                     </div>
 
-                    <!-- Combined Workflow -->
+                    
                     <div class="mt-10 enhanced-card" style="background: linear-gradient(to bottom right, #fef3c7, #dbeafe);">
                         <h4 class="text-xl font-bold text-center mb-6" style="color: #577590;">🔄 The Power of Multiple MCPs Working Together</h4>
                         <div class="max-w-3xl mx-auto">
@@ -1030,7 +989,7 @@
             </div>
         </section>
 
-        <!-- Section 9: Conclusion -->
+        
         <section class="my-16 text-center">
              <h2 class="text-3xl font-bold text-center mb-4" style="color: #F3722C;">Part 9: The Takeaway for Engineers</h2>
              <p class="text-xl max-w-3xl mx-auto font-semibold" style="color: #577590;">Generative AI is not a replacement for a developer. It's a new, powerful, and slightly weird team member.</p>

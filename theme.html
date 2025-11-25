@@ -5,25 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K12 Theme Classification API - Technical Overview</title>
     <style>
-        /* --- RESET & VARIABLES --- */
+        
         :root {
-            --primary: #4f46e5;      /* Indigo-600 */
-            --primary-dark: #4338ca; /* Indigo-700 */
-            --primary-light: #e0e7ff; /* Indigo-100 */
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #e0e7ff;
             
-            --secondary: #0ea5e9;    /* Sky-500 */
+            --secondary: #0ea5e9;
             
-            --success: #10b981;      /* Emerald-500 */
-            --success-bg: #ecfdf5;   /* Emerald-50 */
-            --success-text: #065f46; /* Emerald-800 */
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --success-text: #065f46;
             
-            --bg-body: #f8fafc;      /* Slate-50 */
+            --bg-body: #f8fafc;
             --bg-white: #ffffff;
-            --bg-dark: #0f172a;      /* Slate-900 */
+            --bg-dark: #0f172a;
             
-            --text-main: #1e293b;    /* Slate-800 */
-            --text-muted: #64748b;   /* Slate-500 */
-            --border: #e2e8f0;       /* Slate-200 */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
             
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -48,7 +48,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- UTILITIES --- */
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -75,7 +75,7 @@
             margin-bottom: 1.5rem;
         }
 
-        /* **COMPACTNESS CHANGE**: Reduced vertical padding for sections */
+        
         .section {
             padding: 3rem 0; 
             border-bottom: 1px solid var(--border);
@@ -84,8 +84,7 @@
         .section-white { background-color: var(--bg-white); }
         .section-dark { background-color: var(--bg-dark); color: white; }
 
-        /* --- HERO SECTION --- */
-        /* **COMPACTNESS CHANGE**: Reduced vertical padding for hero */
+        
         .hero {
             padding-top: 4rem; 
             padding-bottom: 3rem; 
@@ -108,7 +107,7 @@
             margin: 0 auto;
         }
 
-        /* --- WORKFLOW (Steps) --- */
+        
         .workflow-grid {
             display: grid;
             gap: 2rem;
@@ -117,7 +116,7 @@
             position: relative;
         }
 
-        /* Connecting line for desktop */
+        
         @media (min-width: 1024px) {
             .workflow-grid {
                 grid-template-columns: repeat(5, 1fr);
@@ -176,7 +175,7 @@
             color: var(--text-muted);
         }
 
-        /* --- COMPARISON TABLE --- */
+        
         .comparison-container {
             overflow-x: auto;
             background: white;
@@ -219,7 +218,7 @@
         
         .old-val { color: var(--text-muted); text-decoration: line-through; margin-right: 0.5rem; font-size: 0.9em; }
 
-        /* --- GRID LAYOUTS --- */
+        
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
         .grid-4 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
 
@@ -233,7 +232,6 @@
             .grid-4 { grid-template-columns: repeat(4, 1fr); }
         }
 
-        /* --- IMPACT CARDS --- */
         .impact-card {
             background: white;
             padding: 2rem;
@@ -250,13 +248,12 @@
         .impact-icon {
             display: inline-flex;
             padding: 0.75rem;
-            background: #e0f2fe; /* sky-100 */
+            background: #e0f2fe;
             color: var(--secondary);
             border-radius: 0.5rem;
             margin-bottom: 1rem;
         }
 
-        /* --- TERMINAL OUTPUT --- */
         .terminal {
             background: #1e293b;
             color: #e2e8f0;

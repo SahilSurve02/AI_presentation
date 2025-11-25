@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Safety Alert System - Technical Overview</title>
     <style>
-        /* --- RESET & VARIABLES --- */
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -46,7 +45,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- UTILITIES --- */
         .container {
             max-width: 1280px;
             margin: 0 auto;
@@ -65,7 +63,6 @@
 
         .section-white { background-color: var(--bg-white); }
 
-        /* --- HERO SECTION --- */
         .hero {
             padding-top: 6rem;
             padding-bottom: 5rem;
@@ -101,7 +98,6 @@
             margin: 0 auto;
         }
 
-        /* --- GRID LAYOUTS --- */
         .grid {
             display: grid;
             gap: 2rem;
@@ -121,7 +117,6 @@
             .grid-4 { grid-template-columns: repeat(4, 1fr); }
         }
 
-        /* --- CARDS --- */
         .card {
             background: white;
             border: 1px solid #e2e8f0;
@@ -137,7 +132,6 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* Step Card Specifics */
         .step-number {
             position: absolute;
             top: 1.5rem;
@@ -181,7 +175,6 @@
             z-index: 1;
         }
 
-        /* Model Card Colors */
         .card.emerald { border-color: #d1fae5; background: #ecfdf5; }
         .card.emerald h3 { color: #047857; }
         
@@ -203,7 +196,6 @@
             opacity: 0.8;
         }
 
-        /* --- ARCHITECTURE --- */
         .arch-list-item {
             display: flex;
             gap: 1rem;
@@ -230,7 +222,6 @@
             flex-shrink: 0;
         }
 
-        /* Terminal Window */
         .terminal {
             background: var(--bg-dark);
             border-radius: var(--radius-xl);
@@ -271,7 +262,6 @@
             border-radius: 0 0.25rem 0.25rem 0;
         }
 
-        /* --- FOOTER --- */
         .feature-tile {
             text-align: center;
             padding: 1.5rem;
@@ -293,7 +283,7 @@
 </head>
 <body>
 
-    <!-- HERO -->
+    
     <section class="hero text-center">
             <h1>
                 Automated Safety Alert System<br>
@@ -305,7 +295,7 @@
         </div>
     </section>
 
-    <!-- PROCESS SECTION -->
+    
     <section class="section section-white" id="process">
         <div class="container">
             <div class="text-center" style="margin-bottom: 4rem;">
@@ -316,7 +306,7 @@
             </div>
 
             <div class="grid grid-4">
-                <!-- Step 1 -->
+                
                 <div class="card">
                     <span class="step-number">01</span>
                     <div class="icon-box" style="color: var(--primary);">
@@ -326,7 +316,7 @@
                     <p>Instantly checks history to skip reports we've already seen. Saves time and resources.</p>
                 </div>
 
-                <!-- Step 2 -->
+                
                 <div class="card">
                     <span class="step-number">02</span>
                     <div class="icon-box" style="color: var(--accent-indigo);">
@@ -336,7 +326,7 @@
                     <p>Scans for 500+ dangerous patterns (weapons, self-harm, threats) using smart context matching.</p>
                 </div>
 
-                <!-- Step 3 -->
+                
                 <div class="card">
                     <span class="step-number">03</span>
                     <div class="icon-box" style="color: var(--accent-purple);">
@@ -346,7 +336,7 @@
                     <p>Two independent AI models read the text. Both must agree on danger to raise an alert.</p>
                 </div>
 
-                <!-- Step 4 -->
+                
                 <div class="card">
                     <span class="step-number">04</span>
                     <div class="icon-box" style="color: var(--accent-rose);">
@@ -359,7 +349,7 @@
         </div>
     </section>
 
-    <!-- TECHNOLOGY SECTION -->
+    
     <section class="section" id="technology">
         <div class="container">
             <div style="margin-bottom: 3rem;">
@@ -368,7 +358,7 @@
             </div>
 
             <div class="grid grid-3">
-                <!-- Model 1 -->
+                
                 <div class="card emerald">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                         <div>
@@ -384,7 +374,7 @@
                     </div>
                 </div>
 
-                <!-- Model 2 -->
+                
                 <div class="card blue">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                         <div>
@@ -400,7 +390,7 @@
                     </div>
                 </div>
 
-                <!-- Model 3 -->
+                
                 <div class="card purple">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                         <div>
@@ -419,12 +409,12 @@
         </div>
     </section>
 
-    <!-- ARCHITECTURE SECTION -->
+    
     <section class="section section-white">
         <div class="container">
             <div class="grid grid-2" style="align-items: center; gap: 4rem;">
                 
-                <!-- Info Column -->
+                
                 
     </section>
 
