@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI, ML, & GenAI: A Developer's Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 
+      Source Material Analysis & Narrative Plan:
+      1.  **Source:** User request for a 2-hour presentation for developers (non-ML experts).
+      2.  **Core Topics:** AI vs. ML, Evolution, Classical ML Use Cases, Deep Dive on GenAI (how it works, failures, successes, prompting, SDLC use).
+      3.  **Narrative Flow:**
+          * **Hook:** Define the terms. What is AI vs. ML vs. Deep Learning?
+          * **Context:** How did we get here? An evolution timeline.
+          * **The "Classic" Toolbox:** What are the main types of ML developers might encounter (Predictive, NLP, CV) and their real-world use cases?
+          * **The "New Wave":** Introduce GenAI as the next major shift. Compare it to classical AI.
+          * **GenAI Deep Dive:** How does an LLM *actually* work? (Tokenization, next-word prediction).
+          * **Practical Guide:** How to use GenAI in the SDLC. The "Do's and Don'ts" of prompting.
+          * **Reality Check:** Where has it failed, and where does it succeed?
+          * **Conclusion:** Key takeaways for developers.
+    -->
+    
+    <!-- 
+      Selected Color Palette: "Energetic & Playful"
+      HEX: #F94144 (Red), #F3722C (Orange), #F8961E (Amber), #F9C74F (Yellow), #90BE6D (Pistachio), #43AA8B (Green), #577590 (Blue-Gray)
+    -->
+
+    <!-- 
+      Visualization Choices:
+      * **AI vs. ML vs. DL:** (Goal: Organize) -> **HTML/CSS Nested Diagram.** Justification: Classic, clear way to show hierarchy. (NO SVG, NO MERMAID).
+      * **AI Evolution:** (Goal: Change) -> **HTML/CSS Vertical Timeline.** Justification: Responsive, clear flow of events. (NO SVG, NO MERMAID).
+      * **ML Toolbox Adoption:** (Goal: Compare) -> **Chart.js Horizontal Bar Chart.** Justification: Good for comparing categorical data (interest in ML types). (Canvas-based).
+      * **ML Use Cases:** (Goal: Organize) -> **HTML/CSS Flow-Cards.** Justification: Simple flow diagrams (Data -> Model -> Output) for each ML type. (NO SVG, NO MERMAID).
+      * **Classical vs. GenAI:** (Goal: Compare) -> **HTML/CSS Table.** Justification: Direct, clear comparison of attributes. (NO SVG).
+      * **LLM "Next Word" Process:** (Goal: Organize) -> **HTML/CSS Flow Diagram.** Justification: Shows the step-by-step token/predict loop. (NO SVG, NO MERMAID).
+      * **GenAI in SDLC:** (Goal: Show Composition) -> **Chart.js Donut Chart.** Justification: Shows how GenAI assistance is distributed across dev tasks. (Canvas-based).
+      * **Prompting Good vs. Bad:** (Goal: Compare) -> **HTML/CSS 2-Column Layout.** Justification: Clear side-by-side comparison. (NO SVG).
+      * **Successes vs. Failures:** (Goal: Organize) -> **HTML/CSS Lists.** Justification: Simple, scannable lists with icons (Unicode). (NO SVG).
+    -->
+
+    <!-- 
+      Confirmation: NEITHER Mermaid JS NOR SVG were used in this document. 
+      All diagrams are built with HTML/Tailwind CSS. 
+      All charts are rendered to Canvas via Chart.js.
+    -->
+
+    <style>
+        :root {
+            --primary: #F94144;
+            --primary-light: #FF6B6E;
+            --secondary: #F3722C;
+            --accent: #43AA8B;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-main: linear-gradient(135deg, #F94144 0%, #F3722C 50%, #F8961E 100%);
+        }
+
+        * {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(249, 65, 68, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(67, 170, 139, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(243, 114, 44, 0.03) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Enhanced Chart Container */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+            padding: 1rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Modern Diagram Box */
+        .diagram-box {
+            border: 3px solid;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            font-weight: 600;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagram-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .diagram-box:hover::before {
+            left: 100%;
+        }
+
+        .diagram-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Enhanced Timeline */
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem;
+            padding-left: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(8px);
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 0.6rem;
+            top: 0.5rem;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #F94144, #F3722C, #F8961E);
+            opacity: 0.3;
+        }
+
+        .timeline-item:last-child:before {
+            height: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            height: 1.5rem;
+            width: 1.5rem;
+            border-radius: 9999px;
+            border-width: 3px;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            transform: scale(1.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modern Flow Steps */
+        .flow-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            min-height: 60px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .flow-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        .flow-arrow {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #94a3b8;
+            margin: 0.5rem 0;
+        }
+
+        /* Section Headers with Badge */
+        .section-header {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: var(--gradient-main);
+            color: white;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 4px 6px -1px rgba(249, 65, 68, 0.3);
+        }
+
+        /* Card Enhancements */
+        .enhanced-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .enhanced-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--secondary);
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Pulse Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Decorative Divider */
+        .decorative-divider {
+            height: 4px;
+            width: 100px;
+            background: var(--gradient-main);
+            border-radius: 2px;
+            margin: 1rem auto;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+
+        <header class="text-center my-16 md:my-24">
+            <div class="mb-6">
+                <span class="section-badge pulse">Developer's Guide 2025</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                <span class="gradient-text">From Logic to Language</span>
+            </h1>
+            <div class="decorative-divider"></div>
+            <p class="text-xl md:text-2xl font-light mt-6 max-w-3xl mx-auto" style="color: #577590;">An Engineer's Guide to AI, ML, and Generative AI</p>
+        </header>
+
+        <!-- Section 1: AI vs. ML vs. DL -->
+        <section class="my-20 relative">
+            <!-- Decorative Background -->
+            <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-10" style="background: radial-gradient(circle, #F94144 0%, transparent 70%); filter: blur(40px);"></div>
+            
+            <div class="text-center mb-12">
+                <span class="section-badge">Part 1</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6" style="color: #F3722C;">Demystifying the Jargon</h2>
+                <div class="decorative-divider"></div>
+                <p class="text-lg mt-6 max-w-3xl mx-auto" style="color: #577590;">As engineers, we build on precise definitions. Let's establish our foundation. These terms are not interchangeable; they describe a specific, nested relationship.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 items-center">
+                <div class="flex justify-center p-4">
+                    <div class="diagram-box w-full max-w-md" style="border-color: #F94144; color: #F94144;">
+                        Artificial Intelligence (AI)
+                        <p class="text-sm font-normal mt-2" style="color: #577590;">The broad, overarching concept of building machines that can simulate human intelligence to perform tasks.</p>
+                        <div class="diagram-box mt-4" style="border-color: #F3722C; color: #F3722C;">
+                            Machine Learning (ML)
+                            <p class="text-sm font-normal mt-2" style="color: #577590;">A *subset* of AI. Instead of explicit programming, ML uses algorithms to learn patterns and make predictions from data.</p>
+                            <div class="diagram-box mt-4" style="border-color: #F8961E; color: #F8961E;">
+                                Deep Learning (DL)
+                                <p class="text-sm font-normal mt-2" style="color: #577590;">A *subset* of ML. It uses complex, multi-layered "neural networks" to solve highly intricate problems (like image recognition or language).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-lg" style="color: #577590;">
+                    <h3 class="text-2xl font-semibold mb-4" style="color: #43AA8B;">The Engineer's Analogy</h3>
+                    <p class="mb-4"><strong style="color: #F94144;">AI</strong> is the entire field of "Computer Science." It's the big idea.</p>
+                    <p class="mb-4"><strong style="color: #F3722C;">ML</strong> is a specific paradigm within that field, like "Object-Oriented Programming." It's a *way* of solving problems (by learning from data).</p>
+                    <p class="mb-4"><strong style="color: #F8961E;">Deep Learning</strong> is a specialized technique within that paradigm, like "using the Spring framework for dependency injection." It's a powerful, complex tool for specific ML tasks.</p>
+                    <p class="font-semibold">Key Takeaway: All ML is AI, but not all AI is ML. (e.g., hard-coded `if/else` game logic is AI, but not ML).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Evolution -->
+        <section class="my-20 relative">
+            <div class="text-center mb-12">
+                <span class="section-badge">Part 2</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6" style="color: #F3722C;">How We Got Here</h2>
+                <div class="decorative-divider"></div>
+                <p class="text-lg mt-6 max-w-3xl mx-auto" style="color: #577590;">This isn't an overnight revolution. We're building on decades of research, punctuated by "AI Winters" and massive leaps in compute power.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto mt-12">
+                <div class="relative">
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: #F94144; border-color: #F7F7F7;"></div>
+                        <h4 class="text-xl font-semibold" style="color: #F94144;">1950: The Turing Test</h4>
+                        <p class="text-md" style="color: #577590;">Alan Turing proposes the "Imitation Game." The core question is born: "Can machines think?" This marks the conceptual start of AI.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: #F3722C; border-color: #F7F7F7;"></div>
+                        <h4 class="text-xl font-semibold" style="color: #F3722C;">1966: ELIZA</h4>
+                        <p class="text-md" style="color: #577590;">One of the first "chatbots." A simple pattern-matching program that simulated a psychotherapist. It showed the *illusion* of intelligence.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: #F8961E; border-color: #F7F7F7;"></div>
+                        <h4 class="text-xl font-semibold" style="color: #F8961E;">1997: Deep Blue vs. Kasparov</h4>
+                        <p class="text-md" style="color: #577590;">IBM's Deep Blue defeats the world chess champion. This is a triumph of "Good Old-Fashioned AI" (GOFAI): massive compute and brute-force search, not "learning."</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: #90BE6D; border-color: #F7F7F7;"></div>
+                        <h4 class="text-xl font-semibold" style="color: #90BE6D;">2012: The ImageNet Moment</h4>
+                        <p class="text-md" style="color: #577590;">AlexNet, a Deep Learning model, shatters records in the ImageNet image recognition competition. This proves the power of GPUs and Deep Learning, kicking off the modern AI boom.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: #43AA8B; border-color: #F7F7F7;"></div>
+                        <h4 class="text-xl font-semibold" style="color: #43AA8B;">2017: "Attention Is All You Need"</h4>
+                        <p class="text-md" style="color: #577590;">Google researchers publish the paper introducing the "Transformer" architecture. This is the fundamental building block for *all* modern LLMs, including GPT and Gemini.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: #577590; border-color: #F7F7F7;"></div>
+                        <h4 class="text-xl font-semibold" style="color: #577590;">2022: The Cambrian Explosion</h4>
+                        <p class="text-md" style="color: #577590;">The release of ChatGPT and diffusion models (like Stable Diffusion) brings Generative AI to the public. The paradigm shifts from *analyzing* data to *creating* new data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Classical ML Toolbox -->
+        <section class="my-20 relative">
+            <div class="text-center mb-12">
+                <span class="section-badge">Part 3</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6" style="color: #F3722C;">The "Classical" AI/ML Toolbox</h2>
+                <div class="decorative-divider"></div>
+                <p class="text-lg mt-6 max-w-3xl mx-auto" style="color: #577590;">Before GenAI, ML was already providing massive value. These are the "discriminative" models. They *classify* or *predict*. Here are the main pillars and their engineering use cases.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 items-center">
+                <div class="enhanced-card">
+                    <h3 class="text-2xl font-bold text-center mb-6" style="color: #577590;">Enterprise ML Adoption (Pre-GenAI)</h3>
+                    <div class="chart-container" style="box-shadow: none; padding: 0;">
+                        <canvas id="mlToolboxChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-lg" style="color: #577590;">
+                    <h3 class="text-2xl font-semibold mb-4" style="color: #43AA8B;">What This Shows</h3>
+                    <p>This chart illustrates the typical focus areas for ML engineering. While all are important, "Predictive Analytics" (e.g., forecasting sales, detecting fraud) and "Recommender Systems" (e.g., "users who bought X also bought Y") have long been core business drivers.</p>
+                    <p class="mt-4">NLP (Natural Language Processing) and CV (Computer Vision) were more specialized fields. GenAI has now supercharged these, especially NLP.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                <div class="enhanced-card flex flex-col">
+                    <h4 class="text-2xl font-bold mb-4" style="color: #F94144;">1. Predictive Analytics</h4>
+                    <p class="text-sm" style="color: #577590;">Goal: Forecast a future value or outcome.</p>
+                    <div class="flex-grow flex flex-col justify-center my-4">
+                        <div class="flex flex-col items-center space-y-2">
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Historical Data<br>(e.g., Server Logs, Sales)</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step w-full" style="background-color: #F94144; color: white;">Regression Model</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Prediction<br>(e.g., "75% chance of downtime")</div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold" style="color: #577590;">Use Cases: Fraud detection, hardware failure prediction, demand forecasting, A/B test analysis.</p>
+                </div>
+                
+                <div class="enhanced-card flex flex-col">
+                    <h4 class="text-2xl font-bold mb-4" style="color: #F3722C;">2. Recommender Systems</h4>
+                    <p class="text-sm" style="color: #577590;">Goal: Suggest relevant items to users.</p>
+                     <div class="flex-grow flex flex-col justify-center my-4">
+                        <div class="flex flex-col items-center space-y-2">
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">User Interaction Data<br>(Clicks, Buys, Ratings)</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step w-full" style="background-color: #F3722C; color: white;">Collaborative Filtering</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Recommendation<br>(e.g., "Products you may like")</div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold" style="color: #577590;">Use Cases: E-commerce suggestions, "movies to watch," news feed personalization.</p>
+                </div>
+
+                <div class="enhanced-card flex flex-col">
+                    <h4 class="text-2xl font-bold mb-4" style="color: #90BE6D;">3. Computer Vision (CV)</h4>
+                    <p class="text-sm" style="color: #577590;">Goal: Extract information from images/video.</p>
+                     <div class="flex-grow flex flex-col justify-center my-4">
+                        <div class="flex flex-col items-center space-y-2">
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Pixel Data<br>(Images, Video Frames)</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step w-full" style="background-color: #90BE6D; color: white;">Convolutional Neural Net (CNN)</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Output<br>(e.g., Bounding Box, Class Label)</div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold" style="color: #577590;">Use Cases: QR code scanning, defect detection on assembly lines, content moderation, OCR.</p>
+                </div>
+
+                <div class="enhanced-card flex flex-col">
+                    <h4 class="text-2xl font-bold mb-4" style="color: #43AA8B;">4. NLP (Classical)</h4>
+                    <p class="text-sm" style="color: #577590;">Goal: Understand and process text.</p>
+                     <div class="flex-grow flex flex-col justify-center my-4">
+                        <div class="flex flex-col items-center space-y-2">
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Raw Text<br>(e.g., Support Ticket, Review)</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step w-full" style="background-color: #43AA8B; color: white;">Sentiment/Topic Model</div>
+                            <span class="flow-arrow text-3xl leading-none">↓</span>
+                            <div class="flow-step bg-gray-100 text-gray-700 w-full">Structured Data<br>(e.g., "Negative", "Billing")</div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold" style="color: #577590;">Use Cases: Spam filtering, sentiment analysis, support ticket routing, topic modeling.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-World Examples Section -->
+        <section class="my-20" style="background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%); padding: 4rem 0;">
+            <div class="text-center mb-12">
+                <div class="inline-block px-4 py-2 rounded-full mb-4" style="background-color: #FEF3E2; border: 2px solid #F3722C;">
+                    <span class="text-sm font-bold uppercase tracking-wide" style="color: #F3722C;">Production Systems</span>
+                </div>
+                <h2 class="text-4xl font-bold mb-4" style="color: #F3722C;">Real-World ML/AI Examples</h2>
+                <div class="w-24 h-1 mx-auto rounded" style="background: linear-gradient(to right, #F94144, #F3722C, #F8961E);"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
+                <!-- Button 1: K12 Theme Classification -->
+                <a href="theme.html" class="block relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative p-8 text-white">
+                        <!-- Icon Badge -->
+                        <div class="inline-flex p-4 rounded-2xl mb-6" style="background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        
+                        <!-- Title & Description -->
+                        <h3 class="text-2xl font-bold mb-3">K12 Theme Classification</h3>
+                        <p class="text-sm mb-6 leading-relaxed" style="color: rgba(255, 255, 255, 0.9);">NLP-powered API using DistilBERT to categorize educational dialogues into 43 themes with 85% accuracy.</p>
+                        
+                        <!-- CTA -->
+                        <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
+                            <span class="text-sm font-semibold uppercase tracking-wider">Explore Project</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-2 transition-transform duration-300">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative Elements -->
+                    <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, white 0%, transparent 70%);"></div>
+                </a>
+
+                <!-- Button 2: Safety Alert System -->
+                <a href="safety.html" class="block relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative p-8 text-white">
+                        <!-- Icon Badge -->
+                        <div class="inline-flex p-4 rounded-2xl mb-6" style="background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        
+                        <!-- Title & Description -->
+                        <h3 class="text-2xl font-bold mb-3">Safety Alert System</h3>
+                        <p class="text-sm mb-6 leading-relaxed" style="color: rgba(255, 255, 255, 0.9);">Multi-layered AI pipeline detecting dangerous content in school reports using dual-model verification and GPT-4o.</p>
+                        
+                        <!-- CTA -->
+                        <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
+                            <span class="text-sm font-semibold uppercase tracking-wider">Explore Project</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-2 transition-transform duration-300">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative Elements -->
+                    <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, white 0%, transparent 70%);"></div>
+                </a>
+
+                <!-- Button 3: Color Extractor -->
+                <a href="color.html" class="block relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-500 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative p-8 text-white">
+                        <!-- Icon Badge -->
+                        <div class="inline-flex p-4 rounded-2xl mb-6" style="background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                        
+                        <!-- Title & Description -->
+                        <h3 class="text-2xl font-bold mb-3">Website Color Extractor</h3>
+                        <p class="text-sm mb-6 leading-relaxed" style="color: rgba(255, 255, 255, 0.9);">Computer Vision API combining OpenCV and K-Means clustering to extract brand colors from any website URL.</p>
+                        
+                        <!-- CTA -->
+                        <div class="flex items-center justify-between pt-4 border-t border-white border-opacity-20">
+                            <span class="text-sm font-semibold uppercase tracking-wider">Explore Project</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:translate-x-2 transition-transform duration-300">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative Elements -->
+                    <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20" style="background: radial-gradient(circle, white 0%, transparent 70%);"></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Section 4: Generative AI -->
+        <section class="my-20 relative">
+            <div class="text-center mb-12">
+                <span class="section-badge">Part 4</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6" style="color: #F3722C;">The New Wave - Generative AI</h2>
+                <div class="decorative-divider"></div>
+                <p class="text-lg mt-6 max-w-3xl mx-auto" style="color: #577590;">This is the "latest stage" you've heard about. The fundamental shift is from *prediction* to *creation*. GenAI models are "generative," not "discriminative."</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto mt-12 overflow-x-auto">
+                <table class="w-full min-w-max enhanced-card text-left">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="p-4 text-lg font-semibold" style="color: #577590;">Attribute</th>
+                            <th class="p-4 text-lg font-semibold" style="color: #577590;">Classical ML (Discriminative)</th>
+                            <th class="p-4 text-lg font-semibold" style="color: #F94144;">Generative AI (Generative)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-4 font-semibold">Core Task</td>
+                            <td class="p-4">Learns a boundary to <strong class="text-blue-600">classify</strong> data.</td>
+                            <td class="p-4">Learns the underlying <strong class="text-green-600">distribution</strong> to <strong class="text-green-600">create</strong> new data.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-4 font-semibold">Analogy</td>
+                            <td class="p-4">A student who can only answer <strong class="text-blue-600">multiple-choice questions</strong> (A, B, or C).</td>
+                            <td class="p-4">A student who can write a full <strong class="text-green-600">essay answer</strong> from scratch.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-4 font-semibold">Example Question</td>
+                            <td class="p-4">"Is this email spam or not spam?"</td>
+                            <td class="p-4">"Write me a new spam email."</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-semibold">Common Models</td>
+                            <td class="p-4">Logistic Regression, Support Vector Machines (SVMs), Decision Trees, most CNNs.</td>
+                            <td class="p-4">Large Language Models (LLMs), Generative Adversarial Networks (GANs), Diffusion Models.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 5: How LLMs Work -->
+        <section class="my-20 relative">
+            <div class="text-center mb-12">
+                <span class="section-badge">Part 5</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6" style="color: #F3722C;">Deep Dive - How LLMs *Actually* Work</h2>
+                <div class="decorative-divider"></div>
+                <p class="text-lg mt-6 max-w-3xl mx-auto" style="color: #577590;">This is the most critical part for a developer to understand. An LLM is, at its core, a *fantastically complex next-word predictor*. It has no "understanding" in the human sense. It's a machine for statistical probability.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 items-center">
+                <div class="text-lg" style="color: #577590;">
+                    <h3 class="text-2xl font-semibold mb-4" style="color: #43AA8B;">It's All About Probability</h3>
+                    <p class="mb-4">When you give an LLM a prompt like <strong class="font-mono p-1 rounded" style="background-color: #F9C74F; color: #577590;">"The quick brown fox..."</strong>, it doesn't "think" about foxes.</p>
+                    <p class="mb-4">Instead, it processes your prompt and calculates a probability distribution for *every single word it knows* (its vocabulary).</p>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li>`jumps`: 40.5% probability</li>
+                        <li>`ran`: 15.2% probability</li>
+                        <li>`ate`: 5.1% probability</li>
+                        <li>`atomic`: 0.0001% probability</li>
+                    </ul>
+                    <p class="mt-4">It samples from this list (usually picking the highest, but with some randomness) and picks <strong class="font-mono p-1 rounded" style="background-color: #F9C74F; color: #577590;">"jumps"</strong>. Then, it appends that word to the prompt and *starts the entire process over*, now calculating the next word after <strong class="font-mono p-1 rounded" style="background-color: #F9C74F; color: #577590;">"...fox jumps"</strong>.</p>
+                </div>
+
+                <div class="enhanced-card">
+                    <h3 class="text-2xl font-bold text-center mb-6" style="color: #577590;">The "Next Word Prediction" Process</h3>
+                    <div class="flex flex-col space-y-2">
+                        <div class="flow-step" style="background-color: #F8961E; color: white;">1. Prompt: "The quick brown fox"</div>
+                        <span class="flow-arrow text-3xl leading-none text-center">↓</span>
+                        <div class="flow-step" style="background-color: #90BE6D; color: white;">2. Tokenization: ["The", "quick", "brown", "fox"]</div>
+                        <span class="flow-arrow text-3xl leading-none text-center">↓</span>
+                        <div class="flow-step" style="background-color: #43AA8B; color: white;">3. Embedding: Tokens -> Numerical Vectors</div>
+                        <span class="flow-arrow text-3xl leading-none text-center">↓</span>
+                        <div class="flow-step" style="background-color: #577590; color: white;">4. Transformer Model: (Billions of parameters process vectors with 'Attention')</div>
+                        <span class="flow-arrow text-3xl leading-none text-center">↓</span>
+                        <div class="flow-step" style="background-color: #F3722C; color: white;">5. Probability Output (Softmax): {"jumps": 0.4, "ran": 0.15, ...}</div>
+                        <span class="flow-arrow text-3xl leading-none text-center">↓</span>
+                        <div class="flow-step" style="background-color: #F94144; color: white;">6. Sampling: Select "jumps"</div>
+                        <span class="flow-arrow text-3xl leading-none text-center">↓</span>
+                        <div class="flow-step" style="background-color: #F8961E; color: white;">7. Append & Repeat: Prompt is now "...fox jumps"</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Developer's Guide to GenAI -->
+        <section class="my-20 relative">
+            <div class="text-center mb-12">
+                <span class="section-badge">Part 6</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6" style="color: #F3722C;">A Developer's Practical Guide to GenAI</h2>
+                <div class="decorative-divider"></div>
+                <p class="text-lg mt-6 max-w-3xl mx-auto" style="color: #577590;">This is our new toolkit. Understanding its statistical nature is key to using it effectively and avoiding its pitfalls. It's a "Stochastic Parrot," not a "thinking machine."</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 items-center">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4" style="color: #577590;">Where GenAI Fits in the SDLC</h3>
+                     <div class="chart-container" style="height: 300px; max-height: 350px;">
+                        <canvas id="devUseCasesChart"></canvas>
+                    </div>
+                </div>
+                 <div class="text-lg" style="color: #577590;">
+                    <h3 class="text-2xl font-semibold mb-4" style="color: #43AA8B;">This is a Force Multiplier</h3>
+                    <p>This (hypothetical) chart shows how developers are using GenAI. It's not just "writing code." It's accelerating *all* the surrounding tasks that consume time:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li><strong>Code Generation:</strong> Writing boilerplate, implementing algorithms, creating unit tests.</li>
+                        <li><strong>Debugging/Refactoring:</strong> Explaining complex code, suggesting refactors, identifying bugs.</li>
+                        <li><strong>Documentation:</strong> Writing `README.md` files, generating code comments, explaining pull requests.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-center mt-16 mb-6" style="color: #577590;">Prompt Engineering: Garbage In, Garbage Out</h3>
+            <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">How you *ask* the question determines the quality of the answer. Since it's a "next-word predictor," you must provide strong context to steer its probabilities in the right direction.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+                <div class="bg-white rounded-lg shadow-lg p-6 border-4 border-red-400">
+                    <h4 class="text-xl font-semibold mb-4 text-red-600">BAD PROMPT (Vague) 👎</h4>
+                    <p class="font-mono text-sm bg-gray-100 p-4 rounded" style="color: #577590;">"Write a python function."</p>
+                    <hr class="my-4">
+                    <h5 class="font-semibold mb-2">Why it fails:</h5>
+                    <ul class="list-disc list-inside text-sm space-y-1" style="color: #577590;">
+                        <li>No context. What function?</li>
+                        <li>No constraints. What version of Python?</li>
+                        <li>No definition of success.</li>
+                        <li>The LLM is forced to *guess* what you want, and it will likely guess wrong or give a trivial "hello world" example.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 border-4 border-green-500">
+                    <h4 class="text-xl font-semibold mb-4 text-green-700">GOOD PROMPT (Specific) 👍</h4>
+                    <p class="font-mono text-sm bg-gray-100 p-4 rounded" style="color: #577590;">"Act as a senior Python developer. Write a single Python 3.9 function named `is_valid_email` that takes a string and returns `True` if it's a valid email, `False` otherwise. Use regex for validation. Include type hinting and a docstring explaining the regex."</p>
+                    <hr class="my-4">
+                    <h5 class="font-semibold mb-2">Why it succeeds:</h5>
+                     <ul class="list-disc list-inside text-sm space-y-1" style="color: #577590;">
+                        <li><strong>Role:</strong> "Act as a senior Python developer" (sets the tone and quality).</li>
+                        <li><strong>Task:</strong> "Write a ... function named `is_valid_email`".</li>
+                        <li><strong>Context:</strong> "takes a string and returns `True`/`False`".</li>
+                        <li><strong>Constraints:</strong> "Python 3.9", "Use regex", "single function".</li>
+                        <li><strong>Format:</strong> "Include type hinting and a docstring".</li>
+                    </ul>
+                </div>
+             </div>
+
+            <h3 class="text-2xl font-bold text-center mt-16 mb-6" style="color: #577590;">Reality Check: Successes vs. Failures</h3>
+            <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">This tool is powerful, but not magic. Knowing *when not* to trust it is as important as knowing how to use it.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+                <!-- UPDATED CONTENT FOR FAILS -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h4 class="text-xl font-semibold mb-4 text-red-600">Where GenAI Fails (Be Careful!)</h4>
+                    <ul class="space-y-3" style="color: #577590;">
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">❌</span>
+                            <div>
+                                <strong class="text-red-600">It Makes Things Up (Hallucinations):</strong> Because it predicts words based on probability, it can confidently invent facts, libraries, or events that never happened. Always verify.
+                            </div>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="text-2xl mr-3">❌</span>
+                            <div>
+                                <strong class="text-red-600">Bad at Logic & Math:</strong> It struggles with riddles, complex calculations, or "common sense" reasoning. It is a language model, not a calculator or a brain.
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">❌</span>
+                            <div>
+                                <strong class="text-red-600">Outdated Information:</strong> Unless explicitly connected to the web, it doesn't know about news, library updates, or events that happened after its training cut-off.
+                            </div>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="text-2xl mr-3">❌</span>
+                            <div>
+                                <strong class="text-red-600">Bias Amplification:</strong> It learns from the internet, so it can unintentionally reproduce bad habits, stereotypes, or insecure coding practices found in its training data.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- UPDATED CONTENT FOR SUCCEEDS -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h4 class="text-xl font-semibold mb-4 text-green-700">Where GenAI Succeeds (Use It!)</h4>
+                    <ul class="space-y-3" style="color: #577590;">
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">✅</span>
+                            <div>
+                                <strong class="text-green-700">Writing Boring Code:</strong> Great for generating unit tests, SQL queries, regex, and boilerplate code. It saves you from typing the tedious stuff.
+                            </div>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="text-2xl mr-3">✅</span>
+                            <div>
+                                <strong class="text-green-700">Explaining Concepts:</strong> Paste a confusing error message or a complex function, and it can explain it in plain English. It's a great "on-demand tutor."
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">✅</span>
+                            <div>
+                                <strong class="text-green-700">Translation:</strong> Excellent at converting code from one language to another (e.g., Python to JavaScript) or translating natural languages.
+                            </div>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="text-2xl mr-3">✅</span>
+                            <div>
+                                <strong class="text-green-700">Brainstorming:</strong> Good for generating ideas, edge cases for testing, variable names, or outlining a document structure.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Agents -->
+        <section class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-4" style="color: #F3722C;">Part 7: From Chatbot to Coworker - What is an Agent?</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">We've covered LLMs (the brain). Now let's give that brain some hands. An "Agent" is an LLM wrapper that can <em>act</em> on the world.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 items-center">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4" style="color: #577590;">LLM vs. Agent</h3>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="p-2 text-sm font-semibold" style="color: #577590;">Feature</th>
+                                <th class="p-2 text-sm font-semibold" style="color: #F94144;">Standard LLM</th>
+                                <th class="p-2 text-sm font-semibold" style="color: #43AA8B;">AI Agent</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b">
+                                <td class="p-2 font-semibold">Capability</td>
+                                <td class="p-2">Think, Predict, Summarize</td>
+                                <td class="p-2">Think + <strong class="text-green-600">Execute Tools</strong></td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2 font-semibold">Environment</td>
+                                <td class="p-2">Isolated (Chat Window)</td>
+                                <td class="p-2">Connected (API, File System, Web)</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2 font-semibold">Flow</td>
+                                <td class="p-2">Input -> Output (One shot)</td>
+                                <td class="p-2">Loop: Think -> Act -> Observe -> Repeat</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-semibold">Analogy</td>
+                                <td class="p-2">Brain in a Jar</td>
+                                <td class="p-2">Brain with Hands & Eyes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-lg" style="color: #577590;">
+                    <h3 class="text-2xl font-semibold mb-4" style="color: #43AA8B;">The "Agentic Loop"</h3>
+                    <p class="mb-4">An agent doesn't just answer; it solves problems. It uses a loop:</p>
+                    <div class="flex flex-col space-y-2">
+                         <div class="flow-step" style="background-color: #F94144; color: white;">1. User Goal: "Find and fix the bug in main.py"</div>
+                         <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                         <div class="flow-step" style="background-color: #F3722C; color: white;">2. Thought: "I need to read main.py first."</div>
+                         <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                         <div class="flow-step" style="background-color: #F8961E; color: white;">3. Action: Call Tool `read_file('main.py')`</div>
+                         <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                         <div class="flow-step" style="background-color: #90BE6D; color: white;">4. Observation: (Receives file content)</div>
+                         <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                         <div class="flow-step" style="background-color: #43AA8B; color: white;">5. Loop: "I see the error on line 10..." -> New Action</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: MCP -->
+        <section class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-4" style="color: #F3722C;">Part 8: Giving AI New Skills with MCP</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto" style="color: #577590;">Model Context Protocol (MCP) is like an "App Store" for your AI. Instead of waiting for the AI company to build a feature, you can just "plug in" a new skill. Let's look at a real example using <strong>multiple MCP servers together</strong> in <strong>Cursor</strong>.</p>
+
+            <div class="mt-12">
+                <div class="text-lg mb-8" style="color: #577590;">
+                    <h3 class="text-3xl font-semibold mb-4 text-center" style="color: #43AA8B;">The Scenario: "I need to deeply understand MCP by learning from both video and documentation."</h3>
+                    <p class="mb-4 text-center max-w-4xl mx-auto">You want to master Model Context Protocol. You have a <strong>YouTube tutorial video</strong> explaining MCP concepts and a <strong>technical PDF specification</strong>. You want to extract key concepts from the video, cross-reference with the official docs, and create a comprehensive learning guide.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                        <div class="p-6 bg-red-50 rounded-lg border-l-4" style="border-color: #F94144;">
+                            <h4 class="font-bold text-lg mb-3" style="color: #F94144;">The Old Way (Painful 😫)</h4>
+                            <ol class="list-decimal list-inside text-sm space-y-2">
+                                <li>Open YouTube. Watch the entire MCP tutorial video.</li>
+                                <li>Manually pause and take notes on concepts.</li>
+                                <li>Download the PDF specification document.</li>
+                                <li>Open PDF reader, search for relevant sections.</li>
+                                <li>Manually cross-reference video concepts with PDF documentation.</li>
+                                <li>Switch between windows constantly to compare information.</li>
+                                <li>Manually compile notes into a cohesive guide.</li>
+                                <li><strong>Total time: 3-4 hours</strong> (watching + reading + synthesizing).</li>
+                            </ol>
+                        </div>
+
+                        <div class="p-6 bg-green-50 rounded-lg border-l-4" style="border-color: #43AA8B;">
+                            <h4 class="font-bold text-lg mb-3" style="color: #43AA8B;">The MCP Way (Magic ✨)</h4>
+                            <p class="text-sm mt-2 mb-3">You install <strong>two MCP servers</strong> once: <strong>"YouTube Transcriber MCP"</strong> and <strong>"PDF Reader MCP"</strong>.</p>
+                            <div class="text-sm font-mono bg-white p-3 rounded border mb-3" style="color: #577590;">
+                                <strong>User:</strong> "Analyze this MCP tutorial video (https://www.youtube.com/watch?v=_d0duu3dED4) and cross-reference it with the official MCP specification PDF. Give me: <br/>
+                                1. Key concepts from the video with timestamps<br/>
+                                2. Matching sections in the PDF documentation<br/>
+                                3. A unified learning guide combining both sources"
+                            </div>
+                            <p class="text-sm">Cursor <strong>automatically</strong>:</p>
+                            <ul class="list-disc list-inside text-sm space-y-1 mt-2">
+                                <li>Fetches & transcribes the YouTube video</li>
+                                <li>Reads & extracts content from the PDF</li>
+                                <li>Cross-references both sources using AI</li>
+                                <li>Generates a comprehensive learning guide</li>
+                            </ul>
+                            <p class="text-sm mt-3 font-bold" style="color: #43AA8B;">Total time: 45 seconds.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Two MCP Servers Architecture -->
+                <div class="mt-12">
+                    <h3 class="text-2xl font-semibold text-center mb-8" style="color: #577590;">How It Works Under the Hood - Multi-Server Architecture</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- YouTube Transcriber MCP Flow -->
+                        <div class="enhanced-card">
+                            <h4 class="text-lg font-bold text-center mb-4 pb-3 border-b-2" style="color: #F94144; border-color: #F94144;">MCP Server #1: YouTube Transcriber</h4>
+                            <div class="flex flex-col items-center justify-center space-y-3 p-4">
+                                
+                                <!-- Client -->
+                                <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #F94144;">
+                                    Cursor (The Client)
+                                    <div class="text-xs font-normal opacity-90 mt-1">"I need to transcribe this video URL"</div>
+                                </div>
+                                
+                                <!-- Protocol -->
+                                <div class="text-xl font-bold text-gray-400">↕️ MCP Protocol</div>
+                                
+                                <!-- Server -->
+                                <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #F3722C;">
+                                    Video Transcriber MCP
+                                    <div class="text-xs font-normal opacity-90 mt-1">"Tool: fetch_transcript(video_url)"</div>
+                                    <div class="absolute -right-2 -top-2 bg-yellow-400 text-xs text-black font-bold px-2 py-1 rounded-full transform rotate-12">Skill #1</div>
+                                </div>
+                                
+                                <!-- External API -->
+                                <div class="text-xl font-bold text-gray-400">↕️ YouTube API</div>
+                                
+                                <!-- The Source -->
+                                <div class="w-full text-center p-2 rounded text-sm font-bold text-white" style="background-color: #dc2626;">
+                                    YouTube Video
+                                    <div class="text-xs font-normal opacity-90 mt-1">Returns: Full transcript with timestamps</div>
+                                </div>
+                            </div>
+                            <p class="text-center text-xs text-gray-500 mt-3 italic px-2">Cursor can now "watch" and understand video content without human intervention.</p>
+                        </div>
+
+                        <!-- PDF Reader MCP Flow -->
+                        <div class="enhanced-card">
+                            <h4 class="text-lg font-bold text-center mb-4 pb-3 border-b-2" style="color: #3b82f6; border-color: #3b82f6;">MCP Server #2: PDF Reader</h4>
+                            <div class="flex flex-col items-center justify-center space-y-3 p-4">
+                                
+                                <!-- Client -->
+                                <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #F94144;">
+                                    Cursor (The Client)
+                                    <div class="text-xs font-normal opacity-90 mt-1">"I need to read this PDF document"</div>
+                                </div>
+                                
+                                <!-- Protocol -->
+                                <div class="text-xl font-bold text-gray-400">↕️ MCP Protocol</div>
+                                
+                                <!-- Server -->
+                                <div class="w-full text-center p-3 rounded font-bold text-white relative" style="background-color: #3b82f6;">
+                                    PDF Reader MCP
+                                    <div class="text-xs font-normal opacity-90 mt-1">"Tool: extract_text(pdf_path)"</div>
+                                    <div class="absolute -right-2 -top-2 bg-yellow-400 text-xs text-black font-bold px-2 py-1 rounded-full transform rotate-12">Skill #2</div>
+                                </div>
+                                
+                                <!-- External API -->
+                                <div class="text-xl font-bold text-gray-400">↕️ File System</div>
+                                
+                                <!-- The Source -->
+                                <div class="w-full text-center p-2 rounded text-sm font-bold text-white" style="background-color: #7c3aed;">
+                                    PDF Document
+                                    <div class="text-xs font-normal opacity-90 mt-1">Returns: Extracted text & structure</div>
+                                </div>
+                            </div>
+                            <p class="text-center text-xs text-gray-500 mt-3 italic px-2">Cursor can now "read" and analyze PDF documents natively.</p>
+                        </div>
+                    </div>
+
+                    <!-- Combined Workflow -->
+                    <div class="mt-10 enhanced-card" style="background: linear-gradient(to bottom right, #fef3c7, #dbeafe);">
+                        <h4 class="text-xl font-bold text-center mb-6" style="color: #577590;">🔄 The Power of Multiple MCPs Working Together</h4>
+                        <div class="max-w-3xl mx-auto">
+                            <div class="flex flex-col space-y-3">
+                                <div class="flow-step" style="background-color: #F94144; color: white;">
+                                    <strong>Step 1:</strong> User asks about MCP tutorial video + PDF docs
+                                </div>
+                                <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                                
+                                <div class="flow-step" style="background-color: #F3722C; color: white;">
+                                    <strong>Step 2:</strong> Cursor calls <code>fetch_transcript("youtube.com/...")</code> via YouTube MCP
+                                </div>
+                                <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                                
+                                <div class="flow-step" style="background-color: #F8961E; color: white;">
+                                    <strong>Step 3:</strong> Receives video transcript: "MCP is a protocol that..."
+                                </div>
+                                <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                                
+                                <div class="flow-step" style="background-color: #3b82f6; color: white;">
+                                    <strong>Step 4:</strong> Cursor calls <code>extract_text("mcp-spec.pdf")</code> via PDF MCP
+                                </div>
+                                <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                                
+                                <div class="flow-step" style="background-color: #7c3aed; color: white;">
+                                    <strong>Step 5:</strong> Receives PDF content: "Section 2.1: Protocol Architecture..."
+                                </div>
+                                <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                                
+                                <div class="flow-step" style="background-color: #43AA8B; color: white;">
+                                    <strong>Step 6:</strong> AI analyzes BOTH sources, finds connections, generates unified guide
+                                </div>
+                                <span class="flow-arrow text-2xl leading-none text-center">↓</span>
+                                
+                                <div class="flow-step" style="background-color: #90BE6D; color: white;">
+                                    <strong>Result:</strong> Comprehensive learning guide with video timestamps + PDF references!
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm mt-6 font-semibold" style="color: #577590;">
+                            🎯 Cursor now has <strong>superpowers</strong> without the Cursor team writing ANY YouTube or PDF parsing code!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9: Conclusion -->
+        <section class="my-16 text-center">
+             <h2 class="text-3xl font-bold text-center mb-4" style="color: #F3722C;">Part 9: The Takeaway for Engineers</h2>
+             <p class="text-xl max-w-3xl mx-auto font-semibold" style="color: #577590;">Generative AI is not a replacement for a developer. It's a new, powerful, and slightly weird team member.</p>
+             <p class="text-lg text-center max-w-3xl mx-auto mt-6" style="color: #577590;">It's a "pair programmer" that is infinitely fast, knows every language, but has no common sense and will lie to you with total confidence. Your job is evolving from just "writing code" to also "effectively prompting, verifying, and integrating" what the AI produces.</p>
+             <p class="text-lg text-center max-w-3xl mx-auto mt-4 font-bold" style="color: #F94144;">Trust, but verify.</p>
+        </section>
+
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const chartColors = ['#F94144', '#F3722C', '#F8961E', '#F9C74F', '#90BE6D', '#43AA8B', '#577590'];
+
+            function wrapLabel(label, maxWidth) {
+                if (typeof label !== 'string' || label.length <= maxWidth) {
+                    return label;
+                }
+                
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                words.forEach(word => {
+                    if ((currentLine + word).length > maxWidth) {
+                        lines.push(currentLine.trim());
+                        currentLine = word + ' ';
+                    } else {
+                        currentLine += word + ' ';
+                    }
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            }
+
+            const customTooltipCallbacks = {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            };
+            
+            const mlToolboxCtx = document.getElementById('mlToolboxChart')?.getContext('2d');
+            if (mlToolboxCtx) {
+                new Chart(mlToolboxCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Predictive Analytics', 'Recommender Systems', 'Natural Language Processing (NLP)', 'Computer Vision (CV)'].map(l => wrapLabel(l, 16)),
+                        datasets: [{
+                            label: 'Relative Adoption / Focus',
+                            data: [90, 80, 75, 70],
+                            backgroundColor: chartColors.slice(0, 4),
+                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: customTooltipCallbacks
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e2e8f0'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const devUseCasesCtx = document.getElementById('devUseCasesChart')?.getContext('2d');
+            if (devUseCasesCtx) {
+                new Chart(devUseCasesCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Code Generation', 'Debugging / Refactoring', 'Documentation', 'Test Case Generation'],
+                        datasets: [{
+                            label: 'GenAI Use in SDLC',
+                            data: [40, 30, 15, 15],
+                            backgroundColor: chartColors.slice(4, 8),
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: customTooltipCallbacks
+                            }
+                        }
+                    }
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>
