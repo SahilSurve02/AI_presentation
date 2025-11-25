@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Support Ticket Summarization - Technical Overview</title>
+    <style>
+        :root {
+            --primary: #059669;      
+            --primary-dark: #047857; 
+            --primary-light: #d1fae5; 
+            
+            --secondary: #3b82f6;    
+            
+            --success: #8b5cf6;      
+            --success-bg: #f5f3ff;   
+            --success-text: #5b21b6; 
+            
+            --bg-body: #f8fafc;      
+            --bg-white: #ffffff;
+            --bg-dark: #0f172a;      
+            
+            --text-main: #1e293b;    
+            --text-muted: #64748b;   
+            --border: #e2e8f0;       
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .text-center { text-align: center; }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .font-bold { font-weight: 700; }
+        .uppercase { text-transform: uppercase; }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            padding: 5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-white { background-color: var(--bg-white); }
+        .section-dark { background-color: var(--bg-dark); color: white; }
+
+        .hero {
+            padding-top: 6rem;
+            padding-bottom: 5rem;
+            background: radial-gradient(circle at 10% 20%, rgba(5, 150, 105, 0.05) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+            color: var(--text-main);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 65ch;
+            margin: 0 auto;
+        }
+
+        .workflow-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .workflow-grid {
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 1.5rem;
+            }
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workflow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .step-count {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .step-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--bg-body);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .comparison-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-body);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; }
+            .grid-3 { grid-template-columns: repeat(3, 1fr); }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            h1 { font-size: 3.5rem; }
+        }
+        
+        @media (min-width: 1024px) {
+            .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .impact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .impact-card:hover {
+            border-color: var(--secondary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .impact-icon {
+            display: inline-flex;
+            padding: 0.75rem;
+            background: #e0f2fe; 
+            color: var(--secondary);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .terminal {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: var(--radius-lg);
+            font-family: monospace;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border: 1px solid #334155;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .term-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ef4444; } .yellow { background: #eab308; } .green { background: #22c55e; }
+
+        .term-row { margin-bottom: 0.25rem; }
+        .term-success { color: #4ade80; }
+        .term-info { color: #60a5fa; }
+        .term-muted { color: #64748b; }
+        .term-chat-user { color: #fca5a5; }
+        .term-chat-agent { color: #93c5fd; }
+
+        .process-box {
+            background: var(--success-bg);
+            border: 1px solid #ddd6fe;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .process-title {
+            color: var(--success-text);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="hero text-center">
+        <div class="container">
+            <div class="badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                GENERATIVE AI POWERED
+            </div>
+            <h1>
+                Automated Ticket Summarization<br>
+                <span class="text-primary">Intelligent Support System</span>
+            </h1>
+            <p>
+                Transforming lengthy customer dialogues into concise, actionable summaries in seconds using Large Language Models.
+            </p>
+            
+            <div style="margin-top: 3rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                    Parallel Processing
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    Context Aware
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-white">
+        <div class="container">
+            <div class="text-center" style="margin-bottom: 3rem;">
+                <h2 style="font-size: 2rem;">The 8-Step Automated Flow</h2>
+                <p style="color: var(--text-muted);">From user request to stored insight without human intervention.</p>
+            </div>
+
+            <div class="workflow-grid" style="margin-bottom: 1.5rem;">
+                <div class="workflow-step">
+                    <span class="step-count">01</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    </div>
+                    <div class="step-title">User Request</div>
+                    <div class="step-desc">API receives IDs (e.g., "Summarize 12345-12350") or filters.</div>
+                </div>
+
+                <div class="workflow-step">
+                    <span class="step-count">02</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <div class="step-title">Auth & Validation</div>
+                    <div class="step-desc">Verifies user token and checks request limits (max 100/batch).</div>
+                </div>
+
+                <div class="workflow-step">
+                    <span class="step-count">03</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    </div>
+                    <div class="step-title">Data Retrieval</div>
+                    <div class="step-desc">Fetches raw conversation history and metadata from SQL database.</div>
+                </div>
+
+                <div class="workflow-step">
+                    <span class="step-count">04</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                    </div>
+                    <div class="step-title">Data Cleaning</div>
+                    <div class="step-desc">Removes HTML tags, special characters, and formats text for AI.</div>
+                </div>
+            </div>
+
+            <div class="workflow-grid">
+                <div class="workflow-step" style="border-color: var(--success); background: var(--success-bg);">
+                    <span class="step-count" style="color: var(--success-text);">05</span>
+                    <div class="step-icon" style="color: var(--success);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    </div>
+                    <div class="step-title" style="color: var(--success-text);">GenAI Processing</div>
+                    <div class="step-desc">OpenAI GPT reads context, intent, and generates a concise summary.</div>
+                </div>
+
+                <div class="workflow-step">
+                    <span class="step-count">06</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <div class="step-title">Quality Check</div>
+                    <div class="step-desc">Validates output, handles timeouts, and logs any processing errors.</div>
+                </div>
+
+                <div class="workflow-step">
+                    <span class="step-count">07</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    </div>
+                    <div class="step-title">Save to DB</div>
+                    <div class="step-desc">Stores the summary and updates the ticket status to "processed".</div>
+                </div>
+
+                <div class="workflow-step">
+                    <span class="step-count">08</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </div>
+                    <div class="step-title">Response</div>
+                    <div class="step-desc">Returns success stats and summary data to the user interface.</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section" style="background-color: #f1f5f9;">
+        <div class="container">
+            <div class="grid-2">
+                
+                <div>
+                    <div class="badge" style="background: white; border: 1px solid var(--border);">How It Works</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Inside the AI Brain</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                        Instead of simple keyword matching, we use Generative AI to understand the full conversation flow.
+                    </p>
+                    
+                    <div class="process-box">
+                        <div class="process-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            1. Understands Context
+                        </div>
+                        <p style="font-size: 0.9rem;">Reads the back-and-forth to identify the core issue vs. small talk.</p>
+                    </div>
+
+                    <div class="process-box">
+                        <div class="process-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                            2. Identifies Resolution
+                        </div>
+                        <p style="font-size: 0.9rem;">Pinpoints exactly what the agent did to solve the problem.</p>
+                    </div>
+
+                    <div class="process-box">
+                        <div class="process-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            3. Generates Summary
+                        </div>
+                        <p style="font-size: 0.9rem;">Rewrites the findings into 2-3 professional sentences.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Real-World Example</h2>
+                    <div class="terminal">
+                        <div class="term-header">
+                            <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                            <span style="margin-left: 0.5rem; opacity: 0.7;">conversation_analysis.log</span>
+                        </div>
+                        
+                        <div class="term-row term-muted">// Input: Raw Chat Log (Ticket #9821)</div>
+                        <div class="term-row term-chat-user">Customer: My account was charged twice for the same order!</div>
+                        <div class="term-row term-chat-agent">Agent: I apologize. Let me check your account...</div>
+                        <div class="term-row term-chat-agent">Agent: I see the duplicate. Processing refund now.</div>
+                        <div class="term-row term-chat-user">Customer: How long will it take?</div>
+                        <div class="term-row term-chat-agent">Agent: 3-5 business days.</div>
+                        
+                        <div class="term-row" style="margin: 1.5rem 0; border-top: 1px dashed #334155;"></div>
+                        
+                        <div class="term-row term-muted">// Output: AI Generated Summary</div>
+                        <div class="term-row term-success">
+                            "Customer reported duplicate charge on order. Agent verified issue, processed refund with 3-5 business day timeline. Issue resolved, customer satisfied."
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-white">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 3rem; font-size: 2rem;">Business Impact</h2>
+            
+            <div class="grid-4">
+                
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Massive Time Savings</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Reduces 20 minutes of manual reading to 3 seconds of automated processing.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Consistency</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Standardizes summary format across thousands of tickets, removing human bias.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Cost Efficiency</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Reduces manual review overhead by 90%, freeing up agents for complex tasks.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Better Insights</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Enables managers to spot trends (e.g., "billing issues") instantly via bulk summaries.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
