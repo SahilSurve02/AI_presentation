@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Color Extractor API - System Flow</title>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            /* Keeping the same Indigo/Slate theme */
+            --primary: #4f46e5;      /* Indigo-600 */
+            --primary-dark: #4338ca; /* Indigo-700 */
+            --primary-light: #e0e7ff; /* Indigo-100 */
+            
+            --secondary: #0ea5e9;    /* Sky-500 */
+            
+            --success: #10b981;      /* Emerald-500 */
+            --success-bg: #ecfdf5;   /* Emerald-50 */
+            --success-text: #065f46; /* Emerald-800 */
+            
+            --bg-body: #f8fafc;      /* Slate-50 */
+            --bg-white: #ffffff;
+            --bg-dark: #0f172a;      /* Slate-900 */
+            
+            --text-main: #1e293b;    /* Slate-800 */
+            --text-muted: #64748b;   /* Slate-500 */
+            --border: #e2e8f0;       /* Slate-200 */
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .text-center { text-align: center; }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .font-bold { font-weight: 700; }
+        .uppercase { text-transform: uppercase; }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            padding: 5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-white { background-color: var(--bg-white); }
+        .section-dark { background-color: var(--bg-dark); color: white; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding-top: 6rem;
+            padding-bottom: 5rem;
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 20%);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+            color: var(--text-main);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 65ch;
+            margin: 0 auto;
+        }
+
+        /* --- WORKFLOW (Steps) --- */
+        .workflow-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        /* Adjusted for 7 steps to wrap nicely */
+        @media (min-width: 768px) {
+            .workflow-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .workflow-grid {
+                grid-template-columns: repeat(4, 1fr); /* 4 on top, 3 on bottom */
+                gap: 1.5rem;
+            }
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%; /* Uniform height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workflow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .step-count {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .step-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--bg-body);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* --- TECH TABLE --- */
+        .comparison-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-body);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .tech-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* --- GRID LAYOUTS --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            h1 { font-size: 3.5rem; }
+        }
+        
+        @media (min-width: 1024px) {
+            .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* --- IMPACT CARDS --- */
+        .impact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .impact-card:hover {
+            border-color: var(--secondary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .impact-icon {
+            display: inline-flex;
+            padding: 0.75rem;
+            background: #e0f2fe; /* sky-100 */
+            color: var(--secondary);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- TERMINAL OUTPUT --- */
+        .terminal {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: var(--radius-lg);
+            font-family: monospace;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border: 1px solid #334155;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .term-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ef4444; } .yellow { background: #eab308; } .green { background: #22c55e; }
+
+        .term-row { margin-bottom: 0.25rem; }
+        .term-success { color: #4ade80; }
+        .term-info { color: #60a5fa; }
+        .term-key { color: #c4b5fd; }
+        .term-val { color: #fca5a5; } /* Red-ish for colors */
+        .term-muted { color: #64748b; }
+
+        /* Color Preview Dots */
+        .color-preview {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <section class="hero text-center">
+        <div class="container">
+            <div class="badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h5"></path><path d="M17 12h5"></path><path d="M12 2v5"></path><path d="M12 17v5"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                COMPUTER VISION & AI POWERED
+            </div>
+            <h1>
+                Website Color Extractor<br>
+                <span class="text-primary">Brand Identity API</span>
+            </h1>
+            <p>
+                An automated pipeline combining OpenCV and Machine Learning to accurately identify primary, secondary, and tertiary brand colors from any URL.
+            </p>
+            
+            <div style="margin-top: 3rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    OpenCV Filtering
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    K-Means Clustering
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WORKFLOW SECTION -->
+    <section class="section section-white">
+        <div class="container">
+            <div class="text-center" style="margin-bottom: 3rem;">
+                <h2 style="font-size: 2rem;">The 7-Step Extraction Process</h2>
+                <p style="color: var(--text-muted);">From raw URL to extracted brand palette using intelligent filtering.</p>
+            </div>
+
+            <!-- Workflow Visual - 7 Steps -->
+            <div class="workflow-grid">
+                
+                <!-- Step 1 -->
+                <div class="workflow-step">
+                    <span class="step-count">01</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    </div>
+                    <div class="step-title">1. Website Capture</div>
+                    <div class="step-desc">Automated browser engine renders and takes a high-resolution full-page screenshot of the target URL.</div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="workflow-step">
+                    <span class="step-count">02</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    </div>
+                    <div class="step-title">2. Code Analysis</div>
+                    <div class="step-desc">Simultaneously scans CSS files to identify colors explicitly defined in the website's source code.</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="workflow-step">
+                    <span class="step-count">03</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </div>
+                    <div class="step-title">3. CV Filtering</div>
+                    <div class="step-desc"><strong>OpenCV</strong> removes photos, logos, and decor using edge detection to isolate UI elements.</div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="workflow-step">
+                    <span class="step-count">04</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-5.38c-3.72-3.8-10.64-13.56-8.24-15.22"></path></svg>
+                    </div>
+                    <div class="step-title">4. ML Extraction</div>
+                    <div class="step-desc"><strong>K-Means Clustering</strong> samples 8,000 pixels and groups them in the LAB color space.</div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="workflow-step">
+                    <span class="step-count">05</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    </div>
+                    <div class="step-title">5. Smart Filtering</div>
+                    <div class="step-desc">Eliminates similar shades and standard backgrounds (white/black) to find distinct colors.</div>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="workflow-step">
+                    <span class="step-count">06</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <div class="step-title">6. Intelligent Matching</div>
+                    <div class="step-desc">Cross-references visually extracted colors with CSS code to validate brand accuracy.</div>
+                </div>
+
+                <!-- Step 7 -->
+                <div class="workflow-step">
+                    <span class="step-count">07</span>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <div class="step-title">7. Prioritization</div>
+                    <div class="step-desc">Ranks final results (Brand > Accent > UI) to return the top 3 defining colors.</div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- TECHNOLOGY & OUTPUT SECTION -->
+    <section class="section" style="background-color: #f1f5f9;">
+        <div class="container">
+            <div class="grid-2">
+                
+                <!-- Tech Deep Dive -->
+                <div>
+                    <div class="badge" style="background: white; border: 1px solid var(--border);">Tech Deep Dive</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Hybrid AI Architecture</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        A robust combination of computer vision algorithms and machine learning clustering ensures we don't just pick pixel colors—we understand brand identity.
+                    </p>
+                    
+                    <!-- Comparison/Tech Table -->
+                    <div class="comparison-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Technology</th>
+                                    <th>Function</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Vision</strong></td>
+                                    <td>
+                                        <div class="tech-badge">OpenCV</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">Canny Edge Detection</div>
+                                    </td>
+                                    <td>Isolates UI elements; masks out photos/logos.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Logic</strong></td>
+                                    <td>
+                                        <div class="tech-badge">Machine Learning</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">K-Means Algo</div>
+                                    </td>
+                                    <td>Groups 8,000+ pixels into perceptual clusters.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Color</strong></td>
+                                    <td>
+                                        <div class="tech-badge">LAB Space</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">Delta-E</div>
+                                    </td>
+                                    <td>Matches colors based on how human eyes perceive them.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Terminal Output -->
+                <div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Real-time API Response</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Simple JSON output ready for integration.
+                    </p>
+                    <div class="terminal">
+                        <div class="term-header">
+                            <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                            <span style="margin-left: 0.5rem; opacity: 0.7;">api_response.json</span>
+                        </div>
+                        <div class="term-row term-muted">// Request: GET /extract?url=example.com</div>
+                        <div class="term-row">{</div>
+                        <div class="term-row">  <span class="term-key">"status"</span>: <span class="term-success">"success"</span>,</div>
+                        <div class="term-row">  <span class="term-key">"processing_time"</span>: "16.4s",</div>
+                        <div class="term-row">  <span class="term-key">"palette"</span>: {</div>
+                        
+                        <!-- Primary -->
+                        <div class="term-row">    <span class="term-key">"primary"</span>: {</div>
+                        <div class="term-row">      "hex": <span class="term-val">"#FF5733"</span>,</div>
+                        <div class="term-row">      "type": "Brand Red",</div>
+                        <div class="term-row">      "preview": <span class="color-preview" style="background:#FF5733;"></span></div>
+                        <div class="term-row">    },</div>
+
+                        <!-- Secondary -->
+                        <div class="term-row">    <span class="term-key">"secondary"</span>: {</div>
+                        <div class="term-row">      "hex": <span class="term-val">"#33FF57"</span>,</div>
+                        <div class="term-row">      "type": "Accent Green",</div>
+                        <div class="term-row">      "preview": <span class="color-preview" style="background:#33FF57;"></span></div>
+                        <div class="term-row">    },</div>
+
+                        <!-- Tertiary -->
+                        <div class="term-row">    <span class="term-key">"tertiary"</span>: {</div>
+                        <div class="term-row">      "hex": <span class="term-val">"#3357FF"</span>,</div>
+                        <div class="term-row">      "type": "UI Blue",</div>
+                        <div class="term-row">      "preview": <span class="color-preview" style="background:#3357FF;"></span></div>
+                        <div class="term-row">    }</div>
+
+                        <div class="term-row">  }</div>
+                        <div class="term-row">}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- IMPACT SECTION -->
+    <section class="section section-white">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 3rem; font-size: 2rem;">Why This Approach Works</h2>
+            
+            <div class="grid-4">
+                
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Visual Accuracy</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Computer Vision intelligently ignores photos and ads, extracting only true brand assets.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Perception</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">LAB color space analysis ensures colors are grouped by how humans actually see them.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Smart Filtering</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Automatically removes UI noise (white backgrounds, black text) to focus on the brand.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Performance</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Parallel processing of CSS analysis and image capture delivers results in seconds.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

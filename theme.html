@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K12 Theme Classification API - Technical Overview</title>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --primary: #4f46e5;      /* Indigo-600 */
+            --primary-dark: #4338ca; /* Indigo-700 */
+            --primary-light: #e0e7ff; /* Indigo-100 */
+            
+            --secondary: #0ea5e9;    /* Sky-500 */
+            
+            --success: #10b981;      /* Emerald-500 */
+            --success-bg: #ecfdf5;   /* Emerald-50 */
+            --success-text: #065f46; /* Emerald-800 */
+            
+            --bg-body: #f8fafc;      /* Slate-50 */
+            --bg-white: #ffffff;
+            --bg-dark: #0f172a;      /* Slate-900 */
+            
+            --text-main: #1e293b;    /* Slate-800 */
+            --text-muted: #64748b;   /* Slate-500 */
+            --border: #e2e8f0;       /* Slate-200 */
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .text-center { text-align: center; }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .font-bold { font-weight: 700; }
+        .uppercase { text-transform: uppercase; }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            padding: 5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-white { background-color: var(--bg-white); }
+        .section-dark { background-color: var(--bg-dark); color: white; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding-top: 6rem;
+            padding-bottom: 5rem;
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 20%);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+            color: var(--text-main);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 65ch;
+            margin: 0 auto;
+        }
+
+        /* --- WORKFLOW (Steps) --- */
+        .workflow-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        /* Connecting line for desktop */
+        @media (min-width: 1024px) {
+            .workflow-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 1rem;
+            }
+            .workflow-step::after {
+                content: '';
+                position: absolute;
+                top: 2.5rem;
+                right: -1rem;
+                width: 2rem;
+                height: 2px;
+                background: var(--border);
+                z-index: 0;
+            }
+            .workflow-step:last-child::after { display: none; }
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .workflow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .step-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--bg-body);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            color: var(--primary);
+        }
+
+        .step-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* --- COMPARISON TABLE --- */
+        .comparison-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-body);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .highlight-cell {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            font-weight: 600;
+        }
+        
+        .old-val { color: var(--text-muted); text-decoration: line-through; margin-right: 0.5rem; font-size: 0.9em; }
+
+        /* --- GRID LAYOUTS --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            h1 { font-size: 3.5rem; }
+        }
+        
+        @media (min-width: 1024px) {
+            .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* --- IMPACT CARDS --- */
+        .impact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .impact-card:hover {
+            border-color: var(--secondary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .impact-icon {
+            display: inline-flex;
+            padding: 0.75rem;
+            background: #e0f2fe; /* sky-100 */
+            color: var(--secondary);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- TERMINAL OUTPUT --- */
+        .terminal {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: var(--radius-lg);
+            font-family: monospace;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border: 1px solid #334155;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .term-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ef4444; } .yellow { background: #eab308; } .green { background: #22c55e; }
+
+        .term-row { margin-bottom: 0.25rem; }
+        .term-success { color: #4ade80; }
+        .term-info { color: #60a5fa; }
+        .term-muted { color: #64748b; }
+
+    </style>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <section class="hero text-center">
+        <div class="container">
+            <div class="badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                85% ACCURACY RATE
+            </div>
+            <h1>
+                K12 Theme Classification<br>
+                <span class="text-primary">Intelligent API System</span>
+            </h1>
+            <p>
+                A high-performance NLP pipeline that transforms raw educational dialogue into actionable categorical insights using DistilBERT.
+            </p>
+            
+            <div style="margin-top: 3rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    90ms Processing
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    43 Theme Categories
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    12,900 Training Samples
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WORKFLOW SECTION -->
+    <section class="section section-white">
+        <div class="container">
+            <div class="text-center" style="margin-bottom: 3rem;">
+                <h2 style="font-size: 2rem;">The Process: From Data to Insights</h2>
+                <p style="color: var(--text-muted);">A fully automated pipeline handling up to 500 cases per batch.</p>
+            </div>
+
+            <!-- Workflow Visual -->
+            <div class="workflow-grid">
+                
+                <!-- Step 1 -->
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </div>
+                    <div class="step-title">1. Data Retrieval</div>
+                    <div class="step-desc">System fetches raw dialogue text and metadata from the database based on input IDs.</div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    </div>
+                    <div class="step-title">2. Preparation</div>
+                    <div class="step-desc">Raw text is cleaned, normalized, and split into individual sentences for granular analysis.</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    </div>
+                    <div class="step-title">3. AI Processing</div>
+                    <div class="step-desc">DistilBERT analyzes sentence batches, generating probability scores for 43 categories.</div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <div class="step-title">4. Aggregation</div>
+                    <div class="step-desc">Sentence-level predictions are combined using voting thresholds to determine the main theme.</div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    </div>
+                    <div class="step-title">5. Response</div>
+                    <div class="step-desc">Final classifications (e.g., Transportation, Safety) are saved and returned via API.</div>
+                </div>
+
+            </div>
+
+            <!-- Example Output -->
+            <div class="terminal">
+                <div class="term-header">
+                    <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                    <span style="margin-left: 0.5rem; opacity: 0.7;">api_response_example.json</span>
+                </div>
+                <div class="term-row term-muted">// Request: Batch #402 (3 cases)</div>
+                <div class="term-row">"results": [</div>
+                <div class="term-row">  {</div>
+                <div class="term-row">    "id": "12345",</div>
+                <div class="term-row">    "status": "success",</div>
+                <div class="term-row">    "predictions": [</div>
+                <div class="term-row">      { "theme": <span class="term-success">"Transportation"</span>, "confidence": 0.87, "rank": "Primary" },</div>
+                <div class="term-row">      { "theme": <span class="term-info">"Food Services"</span>, "confidence": 0.68, "rank": "Secondary" },</div>
+                <div class="term-row">      { "theme": "Safety", "confidence": 0.45, "rank": "Tertiary" }</div>
+                <div class="term-row">    ]</div>
+                <div class="term-row">  },</div>
+                <div class="term-row term-muted">  ... (2 more items)</div>
+                <div class="term-row">]</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- COMPARISON SECTION -->
+    <section class="section" style="background-color: #f1f5f9;">
+        <div class="container">
+            <div class="grid-2">
+                
+                <!-- Text Content -->
+                <div>
+                    <div class="badge" style="background: white; border: 1px solid var(--border);">Performance Upgrade</div>
+                    <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">New Model Architecture</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        We migrated from SetFit to DistilBERT to handle the increasing complexity and volume of school dialogues. The new architecture is faster, lighter, and significantly more accurate.
+                    </p>
+                    
+                    <ul style="list-style: none; color: var(--text-main);">
+                        <li style="margin-bottom: 1rem; display: flex; gap: 0.75rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Robust Training:</strong> 300 verified examples per theme</span>
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; gap: 0.75rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span><strong>Scalable:</strong> Handles long-text dialogues effortlessly</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="comparison-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Old Model (SetFit)</th>
+                                <th>New Model (DistilBERT)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Speed</strong></td>
+                                <td>150ms / dialogue</td>
+                                <td class="highlight-cell">⚡ 90ms / dialogue</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Accuracy</strong></td>
+                                <td>78% Correct</td>
+                                <td class="highlight-cell">✓ 85% Correct</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Memory</strong></td>
+                                <td>500 MB</td>
+                                <td class="highlight-cell">350 MB (Efficient)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Long Text</strong></td>
+                                <td>Struggles</td>
+                                <td class="highlight-cell">Native Support</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- IMPACT SECTION -->
+    <section class="section section-white">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 3rem; font-size: 2rem;">Business Impact</h2>
+            
+            <div class="grid-4">
+                
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Cost Savings</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Faster processing directly translates to lower cloud compute costs per request.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Data Quality</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">7% higher accuracy means 85/100 dialogues are classified correctly without humans.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Scalability</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Engineered to handle growing volume and complex multi-topic conversations.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Reliability</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Consistent performance across all 43 categories regardless of dialogue length.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="background: var(--bg-dark); color: var(--text-muted); padding: 3rem 0; text-align: center; font-size: 0.9rem;">
+        <div class="container">
+            <p>&copy; 2025 K12 Analytics Team. All rights reserved.</p>
+            <p style="margin-top: 0.5rem;">Powered by DistilBERT | version 2.0.0</p>
+        </div>
+    </footer>
+
+</body>
+</html>
